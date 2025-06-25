@@ -1,0 +1,129 @@
+Чек-лист
+
+    Для backend, backend-report, frontend описаны корректные Dockerfiles.
+    Для бэкенда добавлены миграции БД, миграции выполняются корректно.
+    Добавлены манифесты для СУБД PostgreSQL. К базе примонтирована PVC для персистивности данных.
+    Есть верхнеуровневый файл Chart.yaml с деплоем «Сосисочной», включающий в себя четыре части: frontend, backend, backend-report и infra со своими Chart.yaml.
+    Внесены корректировки в чарт фронтенда: добавлен Chart.yaml и недостающий Service.
+    Описаны VPA для бэкенда и HPA для backend-report.
+    Описаны LivenessProbe для бэкенда.
+    Описаны стратегии деплоя для бэкенда (RollingUpdate) и backend-report (Recreate).
+    Для всех необходимых приложений указаны resources.requests и resources.limits по памяти и ЦПУ.
+    Все файлы, необходимые для деплоя, сохранены в папке sausage-store-chart.
+    Верхнеуровневый каталог Chart содержит values.yaml с набором переменных, которые нужны для всех микросервисов.
+    Темплейты микросервисов используют переменные из values.yaml типа replicas: {{ .Values.replicas }}, а также генерируемые chart-переменные: name: sausage-backend-{{ .Release.Name }}, namespace: {{ .Release.Namespace }} и так далее.
+    Чарт проходит линтер helm lint ./sausage-store-chart.
+    Чарт можно установить в Kubernetes-кластере helm install ..., при вызове команды helm get all/helm list отображается STATUS: deployed.
+    В Nexus создан репозиторий типа helm(hosted) с вашим именем с параметром Deployment policy: "Allow redeploy".
+
+Чек-лист для задания повышенной сложности
+
+    На вашей ВМ развёрнут Vault.
+    В Vault есть токен с ролью sausage-store.
+    Vault на ВМ в статусе unseal.
+    В pom.xml есть все настройки для работы c Vault.
+    В application.properties добавлены spring.cloud.vault.token, spring.cloud.vault.scheme, spring.cloud.vault.host, spring.cloud.vault.kv.enabled, spring.config.import.
+    В Vault добавлены секреты для spring.data.mongodb.uri, spring.datasource.username, spring.datasource.password.
+    В application.properties отсутствуют параметры spring.data.mongodb.uri, spring.datasource.username , spring.datasource.password.
+    Из Helm-чартов удалены сенситивные переменные бэкенда.
+    Приложение перезапущено после внесённых изменений и работает: фронтенд отдаёт список сосисок, можно оформить заказ на сосиски.
+
+Итоги
+В итоге у вас должен был получиться примерно такой пайплайн:
+Также у вас есть весь набор манифестов для развёртывания приложения «Сосисочной». 
+Если все шаги выполнены правильно, в результате выполнения пайплайна вы увидите следующие состояния сервисов:
+
+kubectl -n sausage-store get po
+NAME                                           READY   STATUS      RESTARTS      AGE
+mongodb-0                                      1/1     Running     0             10h
+mongodb-init-2ttgc                             0/1     Completed   1             10h
+postgresql-0                                   1/1     Running     0             10h
+sausage-store-backend-7cd55567f4-zxjqs         1/1     Running     0             10h
+sausage-store-backend-report-84ff6cd9d-h5vhs   1/1     Running     2 (10h ago)   10h
+sausage-store-frontend-5bdcf57fc4-fvvc4        1/1     Running     0             10h 
+
+Теперь перейдите по ссылке, указанной в ингрессе:
+
+kubectl -n sausage-store get ing
+NAME                             CLASS   HOSTS                                     ADDRESS          PORTS     AGE
+sausage-store-frontend-ingress   nginx   <YOUR_HOSTNAME>.students-projects.ru   158.160.176.69   80, 443   10h 
+
+Проверьте, что вся функциональность сайта работает, а в логах приложений нет ошибок.
+Также необходимо убедиться в корректности настроек VPA и HPA. VPA работает корректно, если в результате команды kubectl desribe vpa sausage-store-backend-vpa вы видите статус RecommendationProvided:
+
+Status:
+  Conditions:
+    Last Transition Time:  2025-03-12T13:29:28Z
+    Status:                True
+    Type:                  RecommendationProvided
+  Recommendation:
+    Container Recommendations:
+      Container Name:  backend
+      Lower Bound:
+        Cpu:     25m
+        Memory:  272014695
+      Target:
+        Cpu:     25m
+        Memory:  272061154
+      Uncapped Target:
+        Cpu:     25m
+        Memory:  272061154
+      Upper Bound:
+        Cpu:     25m
+        Memory:  295293559 
+
+HPA сконфигурирован корректно, если в результате команды kubectl describe hpa sausage-store-backend-report-hpa отображаются корректные значения для минимального и максимального количества реплик, а также текущая загрузка CPU:
+
+Name:                                                  sausage-store-backend-report-hpa
+Namespace:                                             sausage-store
+Labels:                                                app=sausage-store-backend-report-hpa
+                                                       app.kubernetes.io/managed-by=Helm
+Annotations:                                           meta.helm.sh/release-name: sausage-store
+                                                       meta.helm.sh/release-namespace: sausage-store
+CreationTimestamp:                                     Wed, 12 Mar 2025 16:28:27 +0300
+Reference:                                             Deployment/sausage-store-backend-report
+Metrics:                                               ( current / target )
+  resource cpu on pods  (as a percentage of request):  1% (1m) / 75%
+Min replicas:                                          1
+Max replicas:                                          5
+Deployment pods:                                       1 current / 1 desired
+Conditions:
+  Type            Status  Reason              Message
+  ----            ------  ------              -------
+  AbleToScale     True    ReadyForNewScale    recommended size matches current size
+  ScalingActive   True    ValidMetricFound    the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)
+  ScalingLimited  False   DesiredWithinRange  the desired count is within the acceptable range 
+
+Как оценивается работа
+
+Критерии оценки
+
+    Корректность Dockerfiles:
+        0 баллов — отсутствуют или некорректно описаны Dockerfiles для backend, backend-report, frontend, что делает невозможной сборку контейнеров.
+        1 балл — Dockerfiles присутствуют, но содержат ошибки, мешающие корректному запуску сервисов.
+        2 балла — Dockerfiles корректно описаны, контейнеры успешно собираются и запускаются.
+
+    Настроенные миграции и конфигурация базы данных:
+        0 баллов — миграции отсутствуют или не выполняются корректно.
+        1 балл — миграции есть, но присутствуют ошибки.
+        2 балла — миграции корректно добавлены, выполняются без ошибок, база данных подключена, настроена PVC для сохранения данных.
+
+    Корректность Helm-чартов и деплоя:
+        0 баллов — верхнеуровневый Chart.yaml отсутствует или содержит критические ошибки.
+        1 балл — Chart.yaml присутствует, но содержит ошибки в зависимостях или структуре чарта.
+        2 балла — Chart.yaml корректно описывает структуру деплоя, включает frontend, backend, backend-report и infra, деплой проходит успешно.
+
+    Настройка автоматического масштабирования и мониторинга:
+        0 баллов — отсутствуют или некорректно настроены VPA для backend, HPA для backend-report и LivenessProbe для backend.
+        1 балл — механизмы масштабирования и мониторинга описаны, но работают с ошибками.
+        2 балла — VPA для backend и HPA для backend-report корректно настроены и работают, LivenessProbe для backend добавлен и выполняет свою функцию.
+
+    Стратегии деплоя:
+        0 баллов — стратегии деплоя (RollingUpdate для backend, Recreate для backend-report) отсутствуют.
+        1 балл — стратегии деплоя частично реализованы, но с ошибками.
+        2 балла — стратегии деплоя корректно настроены.
+
+    Публикация и развёртывание Helm-чарта:
+        0 баллов — Helm-чарт не проходит проверку (helm lint) и/или не устанавливается.
+        1 балл — Helm-чарт устанавливается, но есть ошибки: например, при команде helm get all/helm list не отображается STATUS: deployed.
+        2 балла — Helm-чарт проходит helm lint, успешно разворачивается в Kubernetes-кластере, отображается STATUS: deployed, а также загружен в репозиторий Nexus типа helm(hosted) с параметром Deployment policy: "Allow redeploy".
