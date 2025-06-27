@@ -1,0 +1,37 @@
+# https://v2.vuejs.org/v2/cookbook/dockerize-vuejs-app.html?redirect=true#Real-World-Example
+# build stage
+FROM node:lts-alpine as build-stage
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+#ENV NODE_ENV=production
+#ENV VUE_APP_API_URL=/api
+## https://stackoverflow.com/questions/69394632/webpack-build-failing-with-err-ossl-evp-unsupported
+#ENV NODE_OPTIONS=--openssl-legacy-provider
+RUN npm run build
+
+# production stage
+FROM nginx:stable-alpine as production-stage
+#COPY nginx.tmpl /etc/nginx/templates/default.conf.template
+
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+
+# https://stackoverflow.com/questions/49955097/how-do-i-add-a-user-when-im-using-alpine-as-a-base-image
+RUN apk update && apk upgrade && \
+    addgroup -S -g 1001 www && \
+    adduser -S -H -D -u 1001 -G www www && \
+    chown -R www:www /var/cache/nginx && \
+    chown -R www:www /var/log/nginx && \
+    touch /var/run/nginx.pid && \
+    chown -R www:www /var/run/nginx.pid
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+
+EXPOSE 80
+
+USER www
+
+CMD ["nginx", "-g", "daemon off;"]
