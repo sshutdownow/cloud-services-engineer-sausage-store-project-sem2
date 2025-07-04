@@ -135,6 +135,9 @@ jobs:
         - name: Check if nexus storage is really added
           run: helm repo list
 
+        - name: Listing available charts in nexus repository
+          run: helm search repo nexus
+
         # Затем добавьте в пайплайн kubeconfig, который вы получили в тренажёре
         - name: Add ~/.kube/config
           run: |
@@ -144,7 +147,7 @@ jobs:
         # Последний шаг — деплой в кластер Kubernetes
         - name: Deploy to Kubernetes
           run: |
-            helm upgrade --install sausage-store nexus/sausage-store-chart \
+            helm upgrade --install sausage-store nexus/sausage-store \
               --namespace $SAUSAGE_STORE_NAMESPACE \
               --set-string backend.image_tag="latest" \
               --set-string frontend.image_tag="latest" \
