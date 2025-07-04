@@ -98,11 +98,14 @@ jobs:
             helm dependency update
             helm package .
 
-        # https://medium.com/linux-shots/helm-chart-repository-on-sonatype-nexus-oss-fcf6f7c7498e
         - name: Upload chart package
-          working-directory: ./sausage-store-chart
           run: |
-            curl -u ${{ secrets.NEXUS_HELM_REPO_USER }}:${{ secrets.NEXUS_HELM_REPO_PASSWORD }} ${{ secrets.NEXUS_HELM_REPO }} --upload-file sausage-store-*.tgz
+            helm plugin install https://github.com/chartmuseum/helm-push
+            helm repo add chartmuseum ${{ env.NEXUS_HELM_REPO }}
+            helm cm-push --force sausage-store-chart/ chartmuseum
+            env:
+              HELM_REPO_USERNAME: ${{ secrets.NEXUS_HELM_REPO_USER }}
+              HELM_REPO_PASSWORD: ${{ secrets.NEXUS_HELM_REPO_PASSWORD }}
 
   # Деплоим приложения в кластер Kubernetes с помощью helm-чарт
   deploy_helm_chart_to_kubernetes:
