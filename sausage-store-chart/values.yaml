@@ -121,9 +121,9 @@ infra:
   postgresql:
   ### Опишите необходимые переменные для развертывания PostgresQL в кластере Kubernetes
     env:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: pgrootpassword
-      POSTGRES_DB: sausage
+      POSTGRES_USER: store
+      POSTGRES_PASSWORD: storepassword
+      POSTGRES_DB: sausage-store
     containerPort: 5432
   mongodb:
     env:
