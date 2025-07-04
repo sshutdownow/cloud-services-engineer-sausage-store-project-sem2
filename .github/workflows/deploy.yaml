@@ -84,8 +84,6 @@ jobs:
         # https://github.com/marketplace/actions/helm-tool-installer
         - name: Install Helm
           uses: azure/setup-helm@v4.3.0
-#          with:
-#          version: '<version>' # default is latest (stable)
           id: install_helm
 
         - name: Helm lint chart
@@ -99,8 +97,7 @@ jobs:
             helm package .
 
         - name: Helm install plugin
-          run: |
-            helm plugin install https://github.com/chartmuseum/helm-push
+          run: helm plugin install https://github.com/chartmuseum/helm-push
 
         - name: Add nexus storage for chart package
           run: |
@@ -108,8 +105,8 @@ jobs:
             helm repo update
 
         - name: Upload chart package to nexus
-          run: |
-            helm cm-push -f -u $NEXUS_HELM_REPO_USER -p $NEXUS_HELM_REPO_PASSWORD --context-path /repository/${{ github.repository_owner }} sausage-store-chart/ nexus
+          run: helm cm-push -f -u $NEXUS_HELM_REPO_USER -p $NEXUS_HELM_REPO_PASSWORD --context-path /repository/${{ github.repository_owner }} \
+            sausage-store-chart/ nexus
 
   # Деплоим приложения в кластер Kubernetes с помощью helm-чарт
   deploy_helm_chart_to_kubernetes:
@@ -127,7 +124,26 @@ jobs:
           uses: azure/setup-helm@v4.3.0
           id: install_helm
 
+        # Первым шагом в пайплайне добавьте Helm-репозиторий Nexus
         - name: Add nexus storage with chart package
           run: |
             helm repo add nexus $NEXUS_HELM_REPO --username $NEXUS_HELM_REPO_USER --password $NEXUS_HELM_REPO_PASSWORD
             helm repo update
+
+        - name: Check if nexus storage is really added
+          run: helm repo list
+
+        # Затем добавьте в пайплайн kubeconfig, который вы получили в тренажёре
+        - name: Add ~/.kube/config
+          run: |
+            mkdir -p ~/.kube && touch ~/.kube/config && chmod 0600 ~/.kube/config && \
+            echo "${KUBE_CONFIG}" | base64 -d > ~/.kube/config
+
+      # Последний шаг — деплой в кластер Kubernetes
+      - name: Deploy to Kubernetes
+        run: |
+          helm upgrade --install sausage-store nexus/sausage-store-chart \
+            --namespace $SAUSAGE_STORE_NAMESPACE \
+            --set-string backend.image_tag="latest" \
+            --set-string frontend.image_tag="latest" \
+            --set-string backend-report.image_tag="latest"
