@@ -98,11 +98,17 @@ jobs:
             helm dependency update
             helm package .
 
-        - name: Upload chart package
+        - name: Helm install plugin
           run: |
             helm plugin install https://github.com/chartmuseum/helm-push
+
+        - name: Add nexus storage for chart package
+          run: |
             helm repo add nexus $NEXUS_HELM_REPO --username $NEXUS_HELM_REPO_USER --password $NEXUS_HELM_REPO_PASSWORD
             helm repo update
+
+        - name: Upload chart package to nexus
+          run: |
             helm cm-push -f -u $NEXUS_HELM_REPO_USER -p $NEXUS_HELM_REPO_PASSWORD --context-path /repository/${{ github.repository_owner }} sausage-store-chart/ nexus
 
   # Деплоим приложения в кластер Kubernetes с помощью helm-чарт
@@ -116,3 +122,12 @@ jobs:
         - name: Check out the repo
           # Получение исходного кода из репозитория:
           uses: actions/checkout@v4
+
+        - name: Install Helm
+          uses: azure/setup-helm@v4.3.0
+          id: install_helm
+
+        - name: Add nexus storage with chart package
+          run: |
+            helm repo add nexus $NEXUS_HELM_REPO --username $NEXUS_HELM_REPO_USER --password $NEXUS_HELM_REPO_PASSWORD
+            helm repo update
