@@ -101,7 +101,7 @@ jobs:
         - name: Upload chart package
           run: |
             helm plugin install https://github.com/chartmuseum/helm-push
-            helm repo add chartmuseum -u ${{ secrets.NEXUS_HELM_REPO_USER }} -p ${{ secrets.NEXUS_HELM_REPO_PASSWORD }} --context-path "/repository/${{ github.repository_owner }}" ${{ env.NEXUS_HELM_REPO }}
+            helm repo add chartmuseum ${{ env.NEXUS_HELM_REPO }}
             helm cm-push -f --context-path "/repository/${{ github.repository_owner }}" \
               -u ${{ secrets.NEXUS_HELM_REPO_USER }} -p ${{ secrets.NEXUS_HELM_REPO_PASSWORD }} \
               sausage-store-chart/ chartmuseum
