@@ -1,4 +1,3 @@
-# https://v2.vuejs.org/v2/cookbook/dockerize-vuejs-app.html?redirect=true#Real-World-Example
 # build stage
 FROM node:12-alpine as build-stage
 WORKDIR /app
@@ -26,10 +25,6 @@ RUN apk update && apk upgrade && \
     chown -R www:www /var/log/nginx && \
     touch /var/run/nginx.pid && \
     chown -R www:www /var/run/nginx.pid
-
-# Add healthcheck
-HEALTHCHECK --interval=30s --timeout=3s \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
 
 EXPOSE 80
 

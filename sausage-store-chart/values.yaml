@@ -58,6 +58,14 @@ backend:
   containerPort: 8080
   livenessProbe:
   ### Опишите LivenessProbe для бэкенда
+    httpGet:
+      # https://docs.spring.io/spring-boot/docs/2.1.0.RELEASE/reference/html/production-ready-endpoints.html
+      path: /actuator/health
+      port: 8080
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
   vpa:
   ### Опишите VPA для бэкенда
 

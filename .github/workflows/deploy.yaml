@@ -76,6 +76,29 @@ jobs:
           # Получение исходного кода из репозитория:
           uses: actions/checkout@v4
 
+        - name: Set names in values.yaml
+          working-directory: ./sausage-store-chart
+          run: |
+            sed -i.orig -e 's/YOUR_DOCKERHUB/${{ env.YOUR_DOCKERHUB }}/g' -e 's/YOUR_STUDENT_HOSTNAME/front-${{ env.YOUR_DOCKERHUB }}/g' values.yaml
+
+        # https://github.com/marketplace/actions/helm-tool-installer
+        - name: Install Helm
+          uses: azure/setup-helm@v4.3.0
+#          with:
+#          version: '<version>' # default is latest (stable)
+          id: install_helm
+
+        - name: Package Helm chart
+          working-directory: ./sausage-store-chart
+          run: |
+            helm dependency update
+            helm package .
+
+        # https://medium.com/linux-shots/helm-chart-repository-on-sonatype-nexus-oss-fcf6f7c7498e
+        - name: Upload chart package
+          run: |
+            curl -u ${{ secrets.NEXUS_HELM_REPO_USER }}:${{ secrets.NEXUS_HELM_REPO_PASSWORD }} ${{ secrets.NEXUS_HELM_REPO }} --upload-file sausage-store-chart*.tgz
+
   # Деплоим приложения в кластер Kubernetes с помощью helm-чарт
   deploy_helm_chart_to_kubernetes:
       name: Deploy Helm Chart To Kubernetes
