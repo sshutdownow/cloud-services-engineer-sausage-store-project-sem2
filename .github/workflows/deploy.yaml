@@ -101,8 +101,9 @@ jobs:
         - name: Upload chart package
           run: |
             helm plugin install https://github.com/chartmuseum/helm-push
-            helm cm-push --force sausage-store-chart/ ${{ env.NEXUS_HELM_REPO }} --context-path=${{ github.repository_owner }}
-              --username=${{ secrets.NEXUS_HELM_REPO_USER }} --password=${{ secrets.NEXUS_HELM_REPO_PASSWORD }}
+            helm cm-push -f --context-path "/repository/${{ github.repository_owner }}" \
+              -u ${{ secrets.NEXUS_HELM_REPO_USER }} -p ${{ secrets.NEXUS_HELM_REPO_PASSWORD }} \
+              sausage-store-chart/ ${{ env.NEXUS_HELM_REPO }}
 
   # Деплоим приложения в кластер Kubernetes с помощью helm-чарт
   deploy_helm_chart_to_kubernetes:
