@@ -88,6 +88,10 @@ jobs:
 #          version: '<version>' # default is latest (stable)
           id: install_helm
 
+       - name: Helm lint chart
+          working-directory: ./sausage-store-chart
+          run: helm lint .
+
         - name: Package Helm chart
           working-directory: ./sausage-store-chart
           run: |
@@ -96,8 +100,9 @@ jobs:
 
         # https://medium.com/linux-shots/helm-chart-repository-on-sonatype-nexus-oss-fcf6f7c7498e
         - name: Upload chart package
+          working-directory: ./sausage-store-chart
           run: |
-            curl -u ${{ secrets.NEXUS_HELM_REPO_USER }}:${{ secrets.NEXUS_HELM_REPO_PASSWORD }} ${{ secrets.NEXUS_HELM_REPO }} --upload-file sausage-store-chart*.tgz
+            curl -u ${{ secrets.NEXUS_HELM_REPO_USER }}:${{ secrets.NEXUS_HELM_REPO_PASSWORD }} ${{ secrets.NEXUS_HELM_REPO }} --upload-file sausage-store-*.tgz
 
   # Деплоим приложения в кластер Kubernetes с помощью helm-чарт
   deploy_helm_chart_to_kubernetes:
