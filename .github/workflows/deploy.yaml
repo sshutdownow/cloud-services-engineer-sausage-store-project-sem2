@@ -105,7 +105,9 @@ jobs:
             helm repo update
 
         - name: Upload chart package to nexus
-          run: helm cm-push -f -u $NEXUS_HELM_REPO_USER -p $NEXUS_HELM_REPO_PASSWORD --context-path /repository/${{ github.repository_owner }} \
+          run: |
+            helm cm-push -f -u $NEXUS_HELM_REPO_USER -p $NEXUS_HELM_REPO_PASSWORD \
+            --context-path /repository/${{ github.repository_owner }} \
             sausage-store-chart/ nexus
 
   # Деплоим приложения в кластер Kubernetes с помощью helm-чарт
