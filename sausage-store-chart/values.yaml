@@ -46,6 +46,10 @@ backend:
   replicas: 1
   strategy:
   ### Опишите стратегию RollingUpdate для бэкенда
+    type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
   image: YOUR_DOCKERHUB/sausage-backend:latest
   imagePullPolicy: Always
   resources:
@@ -67,14 +71,51 @@ backend:
     timeoutSeconds: 5
     failureThreshold: 3
   vpa:
-  ### Опишите VPA для бэкенда
+  ### Опишите VPA (Vertical Pod Autoscaler) для бэкенда
+    enabled: true
+    mode: "Auto"
+    updatePolicy:
+      updateMode: "Auto"
+    resourcePolicy:
+      containerPolicies:
+        - containerName: "*"
+          controlledResources: ["cpu", "memory"]
+          minAllowed:
+            memory: "192Mi"
+            cpu: "100m"
+          maxAllowed:
+            memory: "1024Mi"
+            cpu: "2"
 
 backend-report:
 ### Опишите значения для backend-report
 ### Приложение должно использовать стратегию Recreate
-### Приложение использует переменную PORT - порт, на котором оно запустится и DB - Uri-подключение к mongodb. 
-### DB положите в Secret, PORT в ConfigMap
-### Опишите HPA для backend-report
+  replicas: 1
+  revisionHistoryLimit: 15
+  strategy:
+    type: Recreate
+  image:
+    repository: YOUR_DOCKERHUB/backend-report:latest
+  imagePullPolicy: Always
+  ### Приложение использует переменную PORT - порт, на котором оно запустится и DB - Uri-подключение к mongodb.
+  ### DB положите в Secret, PORT в ConfigMap
+  config:
+    port: "8080"
+  secret:
+    db: "mongodb://root:rootpassword@mongodb:27017"
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+  hpa:
+  ### Опишите HPA для backend-report
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 75
 
 infra:
   postgresql:
