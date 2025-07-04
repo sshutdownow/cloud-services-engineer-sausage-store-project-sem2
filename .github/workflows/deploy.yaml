@@ -141,11 +141,11 @@ jobs:
             mkdir -p ~/.kube && touch ~/.kube/config && chmod 0600 ~/.kube/config && \
             echo "${KUBE_CONFIG}" | base64 -d > ~/.kube/config
 
-      # Последний шаг — деплой в кластер Kubernetes
-      - name: Deploy to Kubernetes
-        run: |
-          helm upgrade --install sausage-store nexus/sausage-store-chart \
-            --namespace $SAUSAGE_STORE_NAMESPACE \
-            --set-string backend.image_tag="latest" \
-            --set-string frontend.image_tag="latest" \
-            --set-string backend-report.image_tag="latest"
+        # Последний шаг — деплой в кластер Kubernetes
+        - name: Deploy to Kubernetes
+          run: |
+            helm upgrade --install sausage-store nexus/sausage-store-chart \
+              --namespace $SAUSAGE_STORE_NAMESPACE \
+              --set-string backend.image_tag="latest" \
+              --set-string frontend.image_tag="latest" \
+              --set-string backend-report.image_tag="latest"
