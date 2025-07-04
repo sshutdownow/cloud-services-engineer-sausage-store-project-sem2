@@ -120,6 +120,11 @@ backend-report:
 infra:
   postgresql:
   ### Опишите необходимые переменные для развертывания PostgresQL в кластере Kubernetes
+    env:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: pgrootpassword
+      POSTGRES_DB: sausage
+    containerPort: 5432
   mongodb:
     env:
       MONGO_INITDB_ROOT_USERNAME: root
