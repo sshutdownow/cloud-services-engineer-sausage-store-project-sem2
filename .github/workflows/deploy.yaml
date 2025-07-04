@@ -88,7 +88,7 @@ jobs:
 #          version: '<version>' # default is latest (stable)
           id: install_helm
 
-       - name: Helm lint chart
+        - name: Helm lint chart
           working-directory: ./sausage-store-chart
           run: helm lint .
 
