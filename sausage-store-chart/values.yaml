@@ -112,7 +112,7 @@ backend-report:
     enabled: true
     minReplicas: 1
     maxReplicas: 3
-    targetCPUUtilizationPercentage: 75
+    averageUtilization: 75
 
 infra:
   postgresql:

@@ -87,7 +87,12 @@ spec:
     apiVersion: "apps/v1"
     kind: Deployment
     name: {{ .Release.Name }}-{{ .Chart.Name }}
-  enabled: {{ .Values.hpa.enabled }}
   minReplicas: {{ .Values.hpa.minReplicas }}
   maxReplicas: {{ .Values.hpa.maxReplicas }}
-  targetCPUUtilizationPercentage:  {{ .Values.hpa.targetCPUUtilizationPercentage }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.hpa.averageUtilization }}
