@@ -30,31 +30,16 @@ spec:
           image: {{ .Values.image }}
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           env:
-            - name: SPRING_DATASOURCE_URL
+            - name: PORT
               valueFrom:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
-                  key: postgres_uri
-            - name: SPRING_DATASOURCE_USERNAME
+                  key: port
+            - name: DB
               valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
-                  key: postgres_user
-            - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
-                  key: postgres_password
-            - name: REPORT_PATH
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
-                  key: report_path
-            - name: LOG_PATH
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
-                  key: log_path
+                secretKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}-secret
+                  key: db
           resources:
 {{ toYaml .Values.resources | indent 12 }} 
           ports:
@@ -67,16 +52,8 @@ spec:
         configMap:
           name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
           items:
-            - key: postgres_uri
-              path: postgres_uri
-            - key: postgres_user
-              path: postgres_user
-            - key: postgres_password
-              path: postgres_password
-            - key: report_path
-              path: report_path
-            - key: log_path
-              path: log_path
+            - key: port
+              path: port
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
