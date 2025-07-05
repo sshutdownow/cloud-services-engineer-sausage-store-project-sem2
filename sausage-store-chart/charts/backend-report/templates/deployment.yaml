@@ -59,7 +59,7 @@ spec:
 {{ toYaml .Values.resources | indent 12 }} 
           ports:
             - name: {{ .Chart.Name }}
-              containerPort: {{ .Values.containerPort }}
+              containerPort: {{ .Values.config.port }}
           livenessProbe:
 {{ toYaml .Values.livenessProbe | indent 12 }} 
       volumes:
