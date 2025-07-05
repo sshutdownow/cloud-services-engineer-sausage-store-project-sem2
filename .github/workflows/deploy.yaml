@@ -85,6 +85,8 @@ jobs:
         - name: Install Helm
           uses: azure/setup-helm@v4.3.0
           id: install_helm
+          with:
+            version: v3.8.0
 
         - name: Helm lint chart
           working-directory: ./sausage-store-chart
@@ -125,6 +127,8 @@ jobs:
         - name: Install Helm
           uses: azure/setup-helm@v4.3.0
           id: install_helm
+          with:
+            version: v3.8.0
 
         # Первым шагом в пайплайне добавьте Helm-репозиторий Nexus
         - name: Add nexus storage with chart package
