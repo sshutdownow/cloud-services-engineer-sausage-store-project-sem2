@@ -51,7 +51,6 @@ backend:
         maxUnavailable: 0
         maxSurge: 1
   image: YOUR_DOCKERHUB/sausage-backend:latest
-  imagePullPolicy: Always
   resources:
     requests:
       memory: "256Mi"
@@ -94,9 +93,7 @@ backend-report:
   revisionHistoryLimit: 15
   strategy:
     type: Recreate
-  image:
-    repository: YOUR_DOCKERHUB/backend-report:latest
-  imagePullPolicy: Always
+  image: YOUR_DOCKERHUB/backend-report:latest
   ### Приложение использует переменную PORT - порт, на котором оно запустится и DB - Uri-подключение к mongodb.
   ### DB положите в Secret, PORT в ConfigMap
   config:

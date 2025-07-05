@@ -107,8 +107,8 @@ jobs:
         - name: Upload chart package to nexus
           run: |
             helm cm-push -f -u $NEXUS_HELM_REPO_USER -p $NEXUS_HELM_REPO_PASSWORD \
-            --context-path /repository/${{ github.repository_owner }} \
-            sausage-store-chart/ nexus
+              --context-path /repository/${{ github.repository_owner }} \
+              sausage-store-chart/ nexus
 
   # Деплоим приложения в кластер Kubernetes с помощью helm-чарт
   deploy_helm_chart_to_kubernetes:
@@ -151,4 +151,5 @@ jobs:
               --namespace $SAUSAGE_STORE_NAMESPACE \
               --set-string backend.image_tag="latest" \
               --set-string frontend.image_tag="latest" \
-              --set-string backend-report.image_tag="latest"
+              --set-string backend-report.image_tag="latest" \
+              --wait
