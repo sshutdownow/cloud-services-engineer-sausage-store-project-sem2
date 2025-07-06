@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}-service
   labels:
-    app: {{ .Release.Name }}-{{ .Chart.Name }}-service
+    app: {{ .Release.Name }}-{{ .Chart.Name }}-app-service
 spec:
   type: ClusterIP
   selector:
