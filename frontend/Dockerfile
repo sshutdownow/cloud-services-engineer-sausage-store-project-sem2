@@ -16,18 +16,6 @@ FROM nginx:stable-alpine as production-stage
 
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-# https://stackoverflow.com/questions/49955097/how-do-i-add-a-user-when-im-using-alpine-as-a-base-image
-RUN apk update && apk upgrade && \
-    rm -rf /var/cache/apk/* && \
-    addgroup -S -g 1001 www && \
-    adduser -S -H -D -u 1001 -G www www && \
-    chown -R www:www /var/cache/nginx && \
-    chown -R www:www /var/log/nginx && \
-    touch /var/run/nginx.pid && \
-    chown -R www:www /var/run/nginx.pid
-
 EXPOSE 80
-
-#USER www
 
 CMD ["nginx", "-g", "daemon off;"]
