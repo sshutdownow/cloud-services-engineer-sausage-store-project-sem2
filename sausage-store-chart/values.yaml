@@ -15,7 +15,7 @@ frontend:
   service:
     port: 80
   ingress:
-    host: YOUR_STUDENT_HOSTNAME.students-projects.ru # Корректный домен будет указан в задании
+    host: YOUR_STUDENT_HOSTNAME.2sem.students-projects.ru # Корректный домен будет указан в задании
     path: /
     pathType: Prefix
   containerPort: 80
