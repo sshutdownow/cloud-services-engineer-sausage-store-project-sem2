@@ -136,7 +136,6 @@ infra:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: rootpassword
       MONGO_INITDB_DATABASE: sausage-store
+      MONGO_USER_NAME: reports
+      MONGO_USER_PASSWORD: reportspassword
     containerPort: 27017
-#spring.data.mongodb.uri=mongodb://reports:reportspassword@mongodb:27017/sausage-store^M
-#spring.datasource.username=store^M
-#spring.datasource.password=storepassword^M
