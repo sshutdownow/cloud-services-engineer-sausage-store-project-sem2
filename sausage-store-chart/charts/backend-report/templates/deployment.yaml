@@ -2,9 +2,9 @@
 {{- $configmapName := printf "%s-%s-conf" .Release.Name .Chart.Name }}
 {{- $found := (lookup "v1" "configmap" .Release.Namespace $configmapName) }}
 {{- if $found }}
-{{- $containerPort := index $found.data "port" | int }}
+{{- $containerPort := index $found.data "port" }}
 {{- else }}
-{{- $containerPort := .Values.config.port | int }}
+{{- $containerPort := .Values.config.port }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,10 +37,7 @@ spec:
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           env:
             - name: PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
-                  key: port
+              value: {{ $containerPort }}
             - name: DB
               valueFrom:
                 secretKeyRef:
@@ -50,11 +47,7 @@ spec:
 {{ toYaml .Values.resources | indent 12 }} 
           ports:
             - name: {{ .Chart.Name }}
-              containerPort: {{ $containerPort }}
-#                valueFrom:
-#                  configMapKeyRef:
-#                    name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
-#                    key: port
+              containerPort: {{ $containerPort | int }}
           livenessProbe:
 {{ toYaml .Values.livenessProbe | indent 12 }} 
       volumes:
