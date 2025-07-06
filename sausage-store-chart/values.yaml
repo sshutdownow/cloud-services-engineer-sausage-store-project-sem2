@@ -98,7 +98,7 @@ backend-report:
   ### DB положите в Secret, PORT в ConfigMap
   config:
     # https://helm.sh/docs/chart_template_guide/yaml_techniques/#yaml-anchors
-    port: &backend-report-config-port "8080"
+    port: &backend-report-config-port 8080
   secret:
     db: "mongodb://root:rootpassword@mongodb:27017"
   resources:

@@ -153,5 +153,5 @@ jobs:
           run: |
             helm upgrade --install sausage-store nexus/sausage-store \
               --namespace $SAUSAGE_STORE_NAMESPACE \
-              --wait --debug || true
+              --wait --debug
             rm -rf ~/.kube
