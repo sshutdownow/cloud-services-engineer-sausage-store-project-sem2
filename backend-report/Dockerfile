@@ -20,15 +20,16 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 ######## Start a new stage from scratch #######
 FROM alpine:latest  
 
-WORKDIR /root/
+WORKDIR /app
 
 # Copy the Pre-built binary file from the previous stage
-COPY --from=builder /app/main .
+COPY --chmod=0555 --from=builder /app/main .
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
 
-USER 1000
+# https://docs.docker.com/reference/dockerfile/#user
+USER 1001:1001
 
 # Command to run the executable
 CMD ["/app/main"]
