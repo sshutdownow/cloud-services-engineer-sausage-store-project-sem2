@@ -44,7 +44,11 @@ spec:
 {{ toYaml .Values.resources | indent 12 }} 
           ports:
             - name: {{ .Chart.Name }}
-              containerPort: {{ .Values.config.port }}
+              containerPort: #{{ .Values.config.port }}
+                valueFrom:
+                  configMapKeyRef:
+                    name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
+                    key: port
           livenessProbe:
 {{ toYaml .Values.livenessProbe | indent 12 }} 
       volumes:
