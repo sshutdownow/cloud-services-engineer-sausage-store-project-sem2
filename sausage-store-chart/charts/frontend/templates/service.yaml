@@ -6,10 +6,10 @@ metadata:
   labels:
     app: {{ .Release.Name }}-{{ .Chart.Name }}-service
 spec:
+  type: ClusterIP
   selector:
     app: {{ .Release.Name }}-{{ .Chart.Name }}
   ports:
     - protocol: TCP
       port: {{ .Values.service.port }} # The port the Service listens on within the cluster
       targetPort: {{ .Values.service.port }} # The port on the Pods that the Service forwards traffic to
-  type: ClusterIP
