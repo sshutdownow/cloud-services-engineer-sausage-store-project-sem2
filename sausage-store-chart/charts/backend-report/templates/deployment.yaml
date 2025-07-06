@@ -1,6 +1,11 @@
 ---
 {{- $configmapName := printf "%s-%s-conf" .Release.Name .Chart.Name -}}
-{{- $containerPort := (lookup "v1" "configmap" "" $configmapName).data.port | atoi -}}
+{{- $found := (lookup "v1" "configmap" .Release.Namespace $configmapName) -}}
+{{- if $found -}}
+    {{- $containerPort := index $found.data "port" | int -}}
+{{- else }}
+    {{- $containerPort := .Values.config.port -}}
+{{- end -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
