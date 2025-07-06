@@ -28,6 +28,6 @@ RUN apk update && apk upgrade && \
 
 EXPOSE 80
 
-USER www
+#USER www
 
 CMD ["nginx", "-g", "daemon off;"]
