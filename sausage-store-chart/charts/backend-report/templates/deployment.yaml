@@ -1,10 +1,11 @@
 ---
-{{- $configmapName := printf "%s-%s-conf" .Release.Name .Chart.Name }}
-{{- $found := (lookup "v1" "configmap" .Release.Namespace $configmapName) }}
-{{- if $found }}
-{{- $containerPort := index $found.data "port" -}}
-{{- else }}
-{{- $containerPort := .Values.config.port -}}
+#{{- $configmapName := printf "%s-%s-conf" .Release.Name .Chart.Name }}
+#{{- $found := (lookup "v1" "configmap" .Release.Namespace $configmapName) }}
+#{{- if $found }}
+#{{- $containerPort := index $found.data "port" -}}
+#{{- else }}
+#{{- $containerPort := .Values.config.port -}}
+#{{- end -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,7 +38,10 @@ spec:
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           env:
             - name: PORT
-              value: {{ $containerPort | quote }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}-conf
+                  key: port
             - name: DB
               valueFrom:
                 secretKeyRef:
@@ -47,7 +51,7 @@ spec:
 {{ toYaml .Values.resources | indent 12 }} 
           ports:
             - name: {{ .Chart.Name }}
-              containerPort: {{ $containerPort | int }}
+              containerPort: {{ .Values.config.port | int }}
           livenessProbe:
 {{ toYaml .Values.livenessProbe | indent 12 }} 
       volumes:
@@ -76,4 +80,3 @@ spec:
       target:
         type: Utilization
         averageUtilization: {{ .Values.hpa.averageUtilization }}
-{{- end -}}
