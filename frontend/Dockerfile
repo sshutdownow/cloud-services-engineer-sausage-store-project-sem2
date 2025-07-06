@@ -1,8 +1,8 @@
 # build stage
-FROM node:12-alpine as build-stage
+FROM node:16-alpine as build-stage
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 #ENV NODE_ENV=production
 #ENV VUE_APP_API_URL=/api
@@ -14,7 +14,7 @@ RUN npm run build
 FROM nginx:stable-alpine as production-stage
 #COPY nginx.tmpl /etc/nginx/templates/default.conf.template
 
-COPY --from=build-stage /app/dist/frontend/ /usr/share/nginx/html
+COPY --chown=nginx:nginx --from=build-stage /app/dist/frontend /usr/share/nginx/html
 
 EXPOSE 80
 
