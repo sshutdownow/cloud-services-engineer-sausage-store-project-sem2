@@ -41,7 +41,7 @@ backend:
     reportPath: /logs/reports
     logPath: /logs
   service:
-    port: 8080
+    port: &backend-config-port 8080
   revisionHistoryLimit: 15
   replicas: 1
   strategy:
@@ -58,13 +58,13 @@ backend:
     limits:
       memory: "512Mi"
       cpu: "500m"
-  containerPort: 8080
+  containerPort: *backend-config-port
   livenessProbe:
   ### Опишите LivenessProbe для бэкенда
     httpGet:
       # https://docs.spring.io/spring-boot/docs/2.1.0.RELEASE/reference/html/production-ready-endpoints.html
       path: /actuator/health
-      port: 8080
+      port: *backend-config-port
     initialDelaySeconds: 60
     periodSeconds: 10
     timeoutSeconds: 5
