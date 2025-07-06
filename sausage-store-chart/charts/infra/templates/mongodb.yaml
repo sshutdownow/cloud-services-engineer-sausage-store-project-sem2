@@ -33,7 +33,7 @@ spec:
         volumeMounts:
         - name: mongodb-data
           mountPath: /data/db
-        - name: mongo-init
+        - name: {{ .Release.Name }}-{{ .Chart.Name }}-init
           mountPath: /docker-entrypoint-initdb.d/mongo-init.js
           subPath: mongo-init.js
           readOnly: true
