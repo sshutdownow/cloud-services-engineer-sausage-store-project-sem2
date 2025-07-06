@@ -1,11 +1,10 @@
 ---
-{{- $configmapName := printf "%s-%s-conf" .Release.Name .Chart.Name -}}
-{{- $found := (lookup "v1" "configmap" .Release.Namespace $configmapName) -}}
-{{- if $found -}}
-    {{- $containerPort := index $found.data "port" | int -}}
+{{- $configmapName := printf "%s-%s-conf" .Release.Name .Chart.Name }}
+{{- $found := (lookup "v1" "configmap" .Release.Namespace $configmapName) }}
+{{- if $found }}
+{{- $containerPort := index $found.data "port" | int }}
 {{- else }}
-    {{- $containerPort := .Values.config.port -}}
-{{- end -}}
+{{- $containerPort := .Values.config.port | int }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -84,3 +83,4 @@ spec:
       target:
         type: Utilization
         averageUtilization: {{ .Values.hpa.averageUtilization }}
+{{- end -}}
