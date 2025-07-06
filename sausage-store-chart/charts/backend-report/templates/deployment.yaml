@@ -2,9 +2,9 @@
 {{- $configmapName := printf "%s-%s-conf" .Release.Name .Chart.Name }}
 {{- $found := (lookup "v1" "configmap" .Release.Namespace $configmapName) }}
 {{- if $found }}
-{{- $containerPort := index $found.data "port" }}
+{{- $containerPort := index $found.data "port" -}}
 {{- else }}
-{{- $containerPort := .Values.config.port }}
+{{- $containerPort := .Values.config.port -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -47,7 +47,7 @@ spec:
 {{ toYaml .Values.resources | indent 12 }} 
           ports:
             - name: {{ .Chart.Name }}
-              containerPort: {{ $containerPort | int }}
+              containerPort: {{ $containerPort }}
           livenessProbe:
 {{ toYaml .Values.livenessProbe | indent 12 }} 
       volumes:
