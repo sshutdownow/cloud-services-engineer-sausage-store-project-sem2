@@ -100,7 +100,7 @@ backend-report:
     # https://helm.sh/docs/chart_template_guide/yaml_techniques/#yaml-anchors
     port: &backend-report-config-port 8080
   secret:
-    db: "mongodb://root:rootpassword@mongodb:27017"
+    db: "mongodb://root:rootpassword@mongodb:27017/sausage-store"
   resources:
     requests:
       memory: "128Mi"
@@ -135,4 +135,5 @@ infra:
     env:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: rootpassword
+      MONGO_INITDB_DATABASE: sausage-store
     containerPort: 27017
