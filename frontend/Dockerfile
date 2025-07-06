@@ -14,7 +14,7 @@ RUN npm run build
 FROM nginx:stable-alpine as production-stage
 #COPY nginx.tmpl /etc/nginx/templates/default.conf.template
 
-COPY --from=build-stage /app/dist /usr/share/nginx/html
+COPY --from=build-stage /app/dist/frontend/ /usr/share/nginx/html
 
 EXPOSE 80
 
