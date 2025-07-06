@@ -37,7 +37,7 @@ spec:
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           env:
             - name: PORT
-              value: {{ $containerPort }}
+              value: {{ $containerPort | quote }}
             - name: DB
               valueFrom:
                 secretKeyRef:
