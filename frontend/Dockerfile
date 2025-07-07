@@ -1,5 +1,5 @@
 # build stage
-FROM node:lts-alpine as build-stage
+FROM node:12-alpine as build-stage
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -11,7 +11,7 @@ COPY . .
 RUN npm run build
 
 # production stage
-FROM nginx:stable-alpine as production-stage
+FROM nginx:1.28-alpine as production-stage
 #COPY nginx.tmpl /etc/nginx/templates/default.conf.template
 
 #RUN rm -rf /usr/share/nginx/html/*
