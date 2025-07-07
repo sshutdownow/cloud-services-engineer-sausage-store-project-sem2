@@ -153,8 +153,5 @@ jobs:
           run: |
             helm upgrade --install sausage-store nexus/sausage-store \
               --namespace $SAUSAGE_STORE_NAMESPACE \
-              --wait --debug \
-              --set backend-report.image_tag=${{ github.sha }} \
-              --set backend.image_tag=${{ github.sha }} \
-              --set frontend.image_tag=${{ github.sha }} ;\
+              --wait --debug ;\
             rm -rf ~/.kube
