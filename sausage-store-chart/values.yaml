@@ -1,5 +1,6 @@
 global:
   imagePullPolicy: Always
+  posgresUserPassword: &postgres-user-password 'dummy'
   ###vault:
   ###  host: ip
   ###  name: vault
@@ -38,7 +39,8 @@ backend:
   env:
     postgresUri: jdbc:postgresql://postgresql:5432/sausage-store
     postgresUser: store
-    postgresPassword: storepassword
+    postgresPassword: *postgres-user-password
+#storepassword
     reportPath: /logs/reports
     logPath: /logs
   service:
@@ -129,7 +131,7 @@ infra:
   ### Опишите необходимые переменные для развертывания PostgresQL в кластере Kubernetes
     env:
       POSTGRES_USER: store
-      POSTGRES_PASSWORD: storepassword
+      POSTGRES_PASSWORD: *postgres-user-password
       POSTGRES_DB: sausage-store
     containerPort: 5432
   mongodb:
