@@ -21,6 +21,18 @@ spec:
         envFrom:
           - configMapRef:
               name: mongodb-conf
+        livenessProbe:
+          exec:
+            command:
+            - mongosh
+            - --port {{ .Values.mongodb.containerPort }}
+            - --authenticationDatabase "admin"
+            - --eval "db.adminCommand('ping')"
+          failureThreshold: 6
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
         ports:
         - containerPort: {{ .Values.mongodb.containerPort }}
         resources:
