@@ -1,11 +1,11 @@
 ---
-{{- $configmapName := printf "%s-%s-conf" .Release.Name .Chart.Name }}
-{{- $found := (lookup "v1" "configmap" .Release.Namespace $configmapName) }}
-{{- if $found }}
-{{- $containerPort := index $found.data "port" -}}
-{{- else }}
-{{- $containerPort := .Values.config.port -}}
-{{- end -}}
+#{{- $configmapName := printf "%s-%s-conf" .Release.Name .Chart.Name }}
+#{{- $found := (lookup "v1" "configmap" .Release.Namespace $configmapName) }}
+#{{- if $found }}
+#{{- $containerPort := index $found.data "port" -}}
+#{{- else }}
+#{{- $containerPort := .Values.config.port -}}
+#{{- end -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

@@ -21,6 +21,17 @@ spec:
         envFrom:
           - configMapRef:
               name: postgresql-conf
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - exec pg_isready -U {{ quote .Values.postgresql.env.POSTGRES_USER }} -h 127.0.0.1 -p {{ .Values.postgresql.containerPort }}
+          failureThreshold: 6
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
         ports:
         - containerPort: {{ .Values.postgresql.containerPort }}
         resources:
