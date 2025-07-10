@@ -4,6 +4,9 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}
   namespace: {{ .Release.Namespace }}
+  annotations:
+    rollme: {{ randAlphaNum 5 | quote }}
+    helm.sh/hook-weight: "3"
   labels:
     app.kubernetes.io/name: {{ .Chart.Name }}
     app.kubernetes.io/instance: "{{ .Release.Name }}"
