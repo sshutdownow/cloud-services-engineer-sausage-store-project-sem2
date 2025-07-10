@@ -22,11 +22,8 @@ spec:
           - configMapRef:
               name: mongodb-conf
         livenessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - exec mongosh -u "$(MONGO_INITDB_ROOT_USERNAME)" -p "($MONGO_INITDB_ROOT_PASSWORD)" --host mongodb --port {{ .Values.mongodb.containerPort }} --authenticationDatabase admin --eval "db.adminCommand('ping')"
+          tcpSocket:
+            port: {{ .Values.mongodb.containerPort }}
           failureThreshold: 6
           initialDelaySeconds: 60
           periodSeconds: 10
