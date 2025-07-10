@@ -1,3 +1,4 @@
+_dummyPassword: &dummyPassword 'dummy'
 global:
   imagePullPolicy: Always
   ###vault:
@@ -36,11 +37,11 @@ backend:
     port: "8080"
     scrape: "true"
   secret:
-    db: "mongodb://reports:reportspassword@mongodb:27017/sausage-store"
+    db: "mongodb://reports@mongodb:27017/sausage-store"
   env:
     postgresUri: jdbc:postgresql://postgresql:5432/sausage-store
     postgresUser: store
-    postgresPassword: 'dummy'
+    postgresPassword: *dummyPassword
     reportPath: /logs/reports
     logPath: /logs
   service:
@@ -103,7 +104,7 @@ backend-report:
     # https://helm.sh/docs/chart_template_guide/yaml_techniques/#yaml-anchors
     port: &backend-report-config-port 8080
   secret:
-    db: "mongodb://reports:reportspassword@mongodb:27017/sausage-store"
+    db: "mongodb://reports@mongodb:27017/sausage-store"
   resources:
     requests:
       memory: "128Mi"
@@ -131,14 +132,14 @@ infra:
   ### Опишите необходимые переменные для развертывания PostgresQL в кластере Kubernetes
     env:
       POSTGRES_USER: store
-      POSTGRES_PASSWORD: 'dummy'
+      POSTGRES_PASSWORD: *dummyPassword
       POSTGRES_DB: sausage-store
     containerPort: 5432
   mongodb:
     env:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+      MONGO_INITDB_ROOT_PASSWORD: *dummyPassword
       MONGO_INITDB_DATABASE: sausage-store
       MONGO_USER_NAME: reports
-      MONGO_USER_PASSWORD: reportspassword
+      MONGO_USER_PASSWORD: *dummyPassword
     containerPort: 27017

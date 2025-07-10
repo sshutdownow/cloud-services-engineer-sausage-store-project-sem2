@@ -79,7 +79,7 @@ jobs:
         - name: Set names in values.yaml
           working-directory: ./sausage-store-chart
           run: |
-            sed -i.orig -e 's/YOUR_DOCKERHUB/${{ env.YOUR_DOCKERHUB }}/g' -e 's/YOUR_STUDENT_HOSTNAME/front-${{ env.YOUR_DOCKERHUB }}/g' values.yaml
+            sed -i.orig -e 's/YOUR_DOCKERHUB/${{ env.YOUR_DOCKERHUB }}/g' values.yaml
 
         # https://github.com/marketplace/actions/helm-tool-installer
         - name: Install Helm
@@ -154,6 +154,7 @@ jobs:
             helm upgrade --install sausage-store nexus/sausage-store \
               --namespace $SAUSAGE_STORE_NAMESPACE \
               --wait --debug \
+              --set-string "frontend.ingress.host=front-${{ env.YOUR_DOCKERHUB }}.2sem.students-projects.ru" \
               --set-string "infra.postgresql.env.POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }},backend.env.postgresPassword=${{ secrets.POSTGRES_PASSWORD }}" \
               --set-string "backend.secret.db=mongodb://reports:${{ secrets.MONGO_USER_PASSWORD }}@mongodb:27017/sausage-store,backend-report.secret.db=mongodb://reports:${{ secrets.MONGO_USER_PASSWORD }}@mongodb:27017/sausage-store" \
               --set-string "infra.mongodb.env.MONGO_USER_PASSWORD=${{ secrets.MONGO_USER_PASSWORD }},infra.mongodb.env.MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_USER_PASSWORD }}" \
