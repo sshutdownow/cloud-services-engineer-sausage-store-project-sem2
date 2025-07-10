@@ -40,8 +40,7 @@ backend:
   env:
     postgresUri: jdbc:postgresql://postgresql:5432/sausage-store
     postgresUser: store
-    postgresPassword:
-#storepassword
+    postgresPassword: 'dummy'
     reportPath: /logs/reports
     logPath: /logs
   service:
@@ -132,7 +131,7 @@ infra:
   ### Опишите необходимые переменные для развертывания PostgresQL в кластере Kubernetes
     env:
       POSTGRES_USER: store
-      POSTGRES_PASSWORD:
+      POSTGRES_PASSWORD: 'dummy'
       POSTGRES_DB: sausage-store
     containerPort: 5432
   mongodb:
