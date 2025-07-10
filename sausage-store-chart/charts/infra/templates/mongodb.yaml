@@ -24,10 +24,9 @@ spec:
         livenessProbe:
           exec:
             command:
-            - mongosh
-            - --port {{ .Values.mongodb.containerPort }}
-            - --authenticationDatabase "admin"
-            - --eval "db.adminCommand('ping')"
+            - /bin/bash
+            - -c
+            - mongosh --port {{ .Values.mongodb.containerPort }} --authenticationDatabase "admin" --eval "db.adminCommand('ping')"
           failureThreshold: 6
           initialDelaySeconds: 60
           periodSeconds: 10
@@ -88,7 +87,9 @@ metadata:
 data:
   MONGO_INITDB_ROOT_USERNAME: {{ .Values.mongodb.env.MONGO_INITDB_ROOT_USERNAME }}
   MONGO_INITDB_ROOT_PASSWORD: {{ .Values.mongodb.env.MONGO_INITDB_ROOT_PASSWORD }}
-  MONGO_INITDB_DATABASE:  {{ .Values.mongodb.env.MONGO_INITDB_DATABASE }}
+  MONGO_INITDB_DATABASE: {{ .Values.mongodb.env.MONGO_INITDB_DATABASE }}
+  MONGO_USER_NAME: {{ .Values.mongodb.env.MONGO_USER_NAME }}
+  MONGO_USER_PASSWORD: {{ .Values.mongodb.env.MONGO_USER_PASSWORD }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -96,15 +97,16 @@ metadata:
   name: "{{ .Release.Name }}-{{ .Chart.Name }}-init"
 data:
 # https://stackoverflow.com/questions/42912755/how-to-create-a-db-for-mongodb-container-on-start-up
+# https://github.com/docker-library/mongo/issues/257
   mongo-init.js: |
     db.createUser(
         {
-            user: {{ quote .Values.mongodb.env.MONGO_USER_NAME }},
-            pwd: {{ quote .Values.mongodb.env.MONGO_USER_PASSWORD }},
+            user: process.env.MONGO_USER_NAME,
+            pwd: process.env.MONGO_USER_PASSWORD,
             roles: [
                 {
                     role: "readWrite",
-                    db: {{ quote .Values.mongodb.env.MONGO_INITDB_DATABASE }}
+                    db: process.env.MONGO_INITDB_DATABASE
                 }
             ]
         }
