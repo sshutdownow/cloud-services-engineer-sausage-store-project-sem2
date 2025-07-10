@@ -34,3 +34,10 @@ sudo http-server ./dist/frontend/ -p 80 --proxy http://localhost:8080
 ```
 
 Then open your browser and go to [http://localhost](http://localhost)
+
+### Развёртывание и запуск приложения в Kubernetes
+Выполняется в рамках [workflow](.github/workflows/deploy.yaml) GitHUB actions.
+MongoDB инициализируется с помощью скрипта в docker-entrypoint, т.е. развёртывание полностю автоматизированно.
+### Чувствительные переменные
+Из helm-чарта убраны пароли, они подставляются на этапе развёртывания из secrets в GitHUB actions.
+Запущенное приложение доступно по ссылке - [https://front-sshutdownow.2sem.students-projects.ru/](https://front-sshutdownow.2sem.students-projects.ru/) и работает: фронтенд отдаёт список сосисок, можно оформить заказ на сосиски.
