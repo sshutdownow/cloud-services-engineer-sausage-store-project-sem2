@@ -24,9 +24,9 @@ spec:
         livenessProbe:
           exec:
             command:
-            - /bin/bash
+            - /bin/sh
             - -c
-            - mongosh --port {{ .Values.mongodb.containerPort }} --authenticationDatabase "admin" --eval "db.adminCommand('ping')"
+            - exec mongosh -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" --port {{ .Values.mongodb.containerPort }} --authenticationDatabase admin --eval "db.adminCommand('ping')"
           failureThreshold: 6
           initialDelaySeconds: 60
           periodSeconds: 10
